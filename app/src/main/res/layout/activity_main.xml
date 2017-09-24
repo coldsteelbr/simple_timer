@@ -21,6 +21,49 @@
             android:textSize="40sp"
             android:hint="00:00:00"/>
 
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center">
+
+            <EditText
+                android:id="@+id/et_hours"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="40sp"
+                android:inputType="numberDecimal"
+                android:maxLength="2"
+                android:text="00"/>
+
+            <TextView
+                android:text=":"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/et_minutes"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="40sp"
+                android:inputType="numberDecimal"
+                android:maxLength="2"
+                android:text="00"/>
+
+            <TextView
+                android:text=":"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/et_seconds"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="40sp"
+                android:inputType="numberDecimal"
+                android:maxLength="2"
+                android:text="00"/>
+
+        </LinearLayout>
     </FrameLayout>
 
     <!-- BUTTON PANEL -->

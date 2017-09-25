@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="ru.romanbrazhnikov.simpletimer.MainActivity">
+    tools:context="ru.romanbrazhnikov.simpletimer.view.MainActivity">
 
     <!-- DISPLAY -->
     <FrameLayout
@@ -19,12 +19,22 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="40sp"
+            android:hint="00:00:00"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/et_timer_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="40sp"
             android:hint="00:00:00"/>
 
         <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:visibility="gone">
 
             <EditText
                 android:id="@+id/et_hours"

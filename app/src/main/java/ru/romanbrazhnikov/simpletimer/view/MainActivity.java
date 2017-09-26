@@ -1,16 +1,13 @@
 package ru.romanbrazhnikov.simpletimer.view;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -20,30 +17,30 @@ import ru.romanbrazhnikov.simpletimer.model.TimerModel;
 public class MainActivity extends AppCompatActivity {
 
     private TimerModel mTimerModel = new TimerModel();
-    private Handler mHandler = new Handler();
 
     private Button bStartStop;
     private TextView tvDisplay;
     private EditText etDisplay;
 
-    final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     TimerExecutor TE;
-    Runnable updateDisplay = new Runnable() {
+    Runnable updateDisplayRunnable = new Runnable() {
         @Override
         public void run() {
-            final Date date = new Date();
-            final long currentTime = date.getTime();
-            long toShow = TE.mStopTimeInMillis - currentTime;
-            if (TE.mStopTimeInMillis < currentTime) {
-                toShow = 0L;
+
+            long currentTime = System.nanoTime() / 1000000; // nano4millis
+            long timeLeft = TE.mStopTimeInNanos - currentTime;
+
+            if (timeLeft <= 0) {
+                timeLeft = 0;
                 TE.shutdown();
             }
 
-            final long finalToShow = toShow;
+            Log.d("Run", "Timeleft: " + timeLeft);
+            final long finalTimeLeft = timeLeft;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tvDisplay.setText(dateFormat.format(new Date(finalToShow)));
+                    tvDisplay.setText(TimerModel.formatMillisToString(finalTimeLeft));
                 }
             });
         }
@@ -53,11 +50,12 @@ public class MainActivity extends AppCompatActivity {
     long stepInSeconds = 1;
 
     class TimerExecutor extends ScheduledThreadPoolExecutor {
-        private long mStopTimeInMillis;
-        private long mDurationInMillis;
+        private long mStopTimeInNanos; // millis
+        private long mDurationInMillis; // millis
         private Runnable mRunnable;
 
         private void runMe() {
+            mStopTimeInNanos = System.nanoTime() * 1000000 + mDurationInMillis;
             this.scheduleAtFixedRate(mRunnable, initDelay, stepInSeconds, TimeUnit.SECONDS);
         }
 
@@ -69,9 +67,6 @@ public class MainActivity extends AppCompatActivity {
             mDurationInMillis = durationInMillis;
         }
 
-        public void setStopTime(long curTimeInMillis) {
-            mStopTimeInMillis = curTimeInMillis + mDurationInMillis;
-        }
 
         public void setRunnable(Runnable runnable) {
             mRunnable = runnable;
@@ -96,13 +91,11 @@ public class MainActivity extends AppCompatActivity {
         bStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                TE.setDurationInMillis(5000);
-                TE.setRunnable(updateDisplay);
-                TE.setStopTime(new Date().getTime());
-                TE.runMe();
                 etDisplay.setVisibility(View.GONE);
                 tvDisplay.setVisibility(View.VISIBLE);
+                TE.mDurationInMillis = 5000 * 60 * 60;
+                TE.mStopTimeInNanos = System.nanoTime() / 1000000 + TE.mDurationInMillis;
+                TE.scheduleAtFixedRate(updateDisplayRunnable, initDelay, stepInSeconds, TimeUnit.SECONDS);
             }
         });
 

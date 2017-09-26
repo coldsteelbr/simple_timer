@@ -1,28 +1,16 @@
 package ru.romanbrazhnikov.simpletimer.model;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by roman on 25.09.17.
  */
 
 public class TimerModel {
 
-    // widgets
-    public interface ModelBinder {
-        void toModel();
-
-        void toView();
-    }
-
-    private ModelBinder mBinder;
-
-    private long mDurationInMillieconds;
+    private long mDurationInNanos;
 
     public TimerModel() {
-    }
-
-    public TimerModel(ModelBinder binder) {
-        mBinder = binder;
-        mBinder.toView();
     }
 
     public void setDuration(String duration) {
@@ -35,6 +23,24 @@ public class TimerModel {
         minutes = Integer.parseInt(res[1]);
         seconds = Integer.parseInt(res[2]);
 
-        mDurationInMillieconds = (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
+        mDurationInNanos = (hours * 60 * 60 + minutes * 60 + seconds) * 1000000000;
+    }
+
+    public static String formatMillisToString(long millis) {
+        return String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(millis), // 5 hours
+                TimeUnit.MILLISECONDS.toMinutes(millis) // 300 minutes - 5 hours to Minutes
+                        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                TimeUnit.MILLISECONDS.toSeconds(millis)
+                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+        );
+    }
+
+    public String getDuration() {
+        return formatMillisToString(mDurationInNanos);
+    }
+
+    public long getDurationInNanos() {
+        return mDurationInNanos;
     }
 }

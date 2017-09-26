@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
 
-            long currentTime = System.nanoTime() / 1000000; // nano4millis
-            long timeLeft = TE.mStopTimeInNanos - currentTime;
+            long currentTime = Math.round(System.nanoTime() / 1000000L); // nano4millis
+            long timeLeft = TE.mStopTimeInMillis - currentTime;
 
             if (timeLeft <= 0) {
                 timeLeft = 0;
@@ -50,27 +50,15 @@ public class MainActivity extends AppCompatActivity {
     long stepInSeconds = 1;
 
     class TimerExecutor extends ScheduledThreadPoolExecutor {
-        private long mStopTimeInNanos; // millis
+        private long mStopTimeInMillis; // millis
         private long mDurationInMillis; // millis
         private Runnable mRunnable;
 
-        private void runMe() {
-            mStopTimeInNanos = System.nanoTime() * 1000000 + mDurationInMillis;
-            this.scheduleAtFixedRate(mRunnable, initDelay, stepInSeconds, TimeUnit.SECONDS);
-        }
 
         public TimerExecutor(int corePoolSize) {
             super(corePoolSize);
         }
 
-        public void setDurationInMillis(long durationInMillis) {
-            mDurationInMillis = durationInMillis;
-        }
-
-
-        public void setRunnable(Runnable runnable) {
-            mRunnable = runnable;
-        }
     }
 
 
@@ -94,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 etDisplay.setVisibility(View.GONE);
                 tvDisplay.setVisibility(View.VISIBLE);
                 TE.mDurationInMillis = 5000 * 60 * 60;
-                TE.mStopTimeInNanos = System.nanoTime() / 1000000 + TE.mDurationInMillis;
+                TE.mStopTimeInMillis = Math.round(System.nanoTime() / 1000000) + TE.mDurationInMillis;
                 TE.scheduleAtFixedRate(updateDisplayRunnable, initDelay, stepInSeconds, TimeUnit.SECONDS);
             }
         });

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context="ru.romanbrazhnikov.simpletimer.view.AlarmActivity">
+
+    <TextView
+        android:id="@+id/tv_alarm_caprion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="40sp"
+        android:text="TIME OVER"/>
+
+    <Button
+        android:id="@+id/b_alarm_okay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Okay"/>
+</LinearLayout>

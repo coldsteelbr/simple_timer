@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private StopClickListener mStopClickListener = new StopClickListener();
     private CancelClickListener mCancelClickListener = new CancelClickListener();
 
+    private boolean mIsCanceled = true;
+
     TimerExecutor TE;
     Runnable updateDisplayRunnable = new TimerRunnable();
 
@@ -37,11 +39,21 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
 
             long currentTime = Math.round(System.nanoTime() / 1000000000L) * 1000; // nano4millis
-            long timeLeft = TE.mStopTimeInMillis - currentTime - 1000;
+            long timeLeft = TE.mStopTimeInMillis - currentTime;
 
             if (timeLeft <= 0) {
                 timeLeft = 0;
                 TE.shutdown();
+
+                AlarmActivity.showActivity(MainActivity.this);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resetScreen();
+                        mIsCanceled = true;
+                    }
+                });
             }
 
             Log.d("Run", "Timeleft: " + timeLeft);
@@ -93,6 +105,14 @@ public class MainActivity extends AppCompatActivity {
         tvDisplay = findViewById(R.id.tv_timer_display);
     }
 
+    private void resetScreen() {
+        etDisplay.setVisibility(View.VISIBLE);
+        tvDisplay.setVisibility(View.GONE);
+        bCancel.setVisibility(View.GONE);
+        bStartStop.setText("Start");
+        bStartStop.setOnClickListener(mStartListener);
+    }
+
     //
     // LISTENERS
     //
@@ -107,9 +127,14 @@ public class MainActivity extends AppCompatActivity {
             bStartStop.setEnabled(false);
             TE = new TimerExecutor(1);
             // TODO: implement binding Model<->Widgets
-            mTimerModel.setDuration(etDisplay.getText().toString());
+            if (mIsCanceled) {
+                mTimerModel.setDuration(etDisplay.getText().toString());
+            } else {
+                mTimerModel.setDuration(tvDisplay.getText().toString());
+            }
             TE.mDurationInMillis = mTimerModel.getDurationInMillis();
             TE.mStopTimeInMillis = Math.round(System.nanoTime() / 1000000000) * 1000 + TE.mDurationInMillis;
+            mIsCanceled = false;
             TE.scheduleAtFixedRate(updateDisplayRunnable, initDelay, stepInSeconds, TimeUnit.SECONDS);
 
             view.setOnClickListener(mStopClickListener);
@@ -133,13 +158,11 @@ public class MainActivity extends AppCompatActivity {
     class CancelClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            etDisplay.setVisibility(View.VISIBLE);
-            tvDisplay.setVisibility(View.GONE);
-            bCancel.setVisibility(View.GONE);
+            resetScreen();
             if (!TE.isTerminated()) {
-                return;
+                mStopClickListener.onClick(null);
             }
-
+            mIsCanceled = true;
         }
     }
 }

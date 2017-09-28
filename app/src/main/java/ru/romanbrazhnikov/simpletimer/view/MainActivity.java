@@ -23,11 +23,13 @@ public class MainActivity extends AppCompatActivity {
     private EditText etDisplay;
 
     TimerExecutor TE;
-    Runnable updateDisplayRunnable = new Runnable() {
+    Runnable updateDisplayRunnable = new TimerRunnable();
+
+    class TimerRunnable implements Runnable {
         @Override
         public void run() {
 
-            long currentTime = Math.round(System.nanoTime() / 1000000L); // nano4millis
+            long currentTime = Math.round(System.nanoTime() / 1000000000L)  * 1000; // nano4millis
             long timeLeft = TE.mStopTimeInMillis - currentTime;
 
             if (timeLeft <= 0) {
@@ -44,15 +46,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-    };
+    }
+
 
     long initDelay = 0;
     long stepInSeconds = 1;
 
     class TimerExecutor extends ScheduledThreadPoolExecutor {
-        private long mStopTimeInMillis; // millis
-        private long mDurationInMillis; // millis
-        private Runnable mRunnable;
+        private long mStopTimeInMillis;
+        private long mDurationInMillis;
 
 
         public TimerExecutor(int corePoolSize) {
@@ -69,27 +71,30 @@ public class MainActivity extends AppCompatActivity {
 
         initWidgets();
 
-        TE = new TimerExecutor(1);
-
     }
 
 
     private void initWidgets() {
         bStartStop = findViewById(R.id.b_startStop);
-        bStartStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                etDisplay.setVisibility(View.GONE);
-                tvDisplay.setVisibility(View.VISIBLE);
-                TE.mDurationInMillis = 5000 * 60 * 60;
-                TE.mStopTimeInMillis = Math.round(System.nanoTime() / 1000000) + TE.mDurationInMillis;
-                TE.scheduleAtFixedRate(updateDisplayRunnable, initDelay, stepInSeconds, TimeUnit.SECONDS);
-            }
-        });
+        bStartStop.setOnClickListener(new StartClickListener());
 
         etDisplay = findViewById(R.id.et_timer_display);
         tvDisplay = findViewById(R.id.tv_timer_display);
 
+    }
+
+    class StartClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            etDisplay.setVisibility(View.GONE);
+            tvDisplay.setVisibility(View.VISIBLE);
+
+            TE = new TimerExecutor(1);
+            mTimerModel.setDuration(etDisplay.getText().toString());
+            TE.mDurationInMillis = mTimerModel.getDurationInMillis();
+            TE.mStopTimeInMillis = Math.round(System.nanoTime() / 1000000000) * 1000 + TE.mDurationInMillis;
+            TE.scheduleAtFixedRate(updateDisplayRunnable, initDelay, stepInSeconds, TimeUnit.SECONDS);
+        }
     }
 
 }

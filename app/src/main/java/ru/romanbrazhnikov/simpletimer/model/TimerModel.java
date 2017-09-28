@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimerModel {
 
-    private long mDurationInNanos;
+    private long mDurationInMillis;
 
     public TimerModel() {
     }
@@ -23,7 +23,7 @@ public class TimerModel {
         minutes = Integer.parseInt(res[1]);
         seconds = Integer.parseInt(res[2]);
 
-        mDurationInNanos = (hours * 60 * 60 + minutes * 60 + seconds) * 1000000000;
+        mDurationInMillis = (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
     }
 
     public static String formatMillisToString(long millis) {
@@ -37,10 +37,10 @@ public class TimerModel {
     }
 
     public String getDuration() {
-        return formatMillisToString(mDurationInNanos);
+        return formatMillisToString(mDurationInMillis);
     }
 
-    public long getDurationInNanos() {
-        return mDurationInNanos;
+    public long getDurationInMillis() {
+        return mDurationInMillis;
     }
 }

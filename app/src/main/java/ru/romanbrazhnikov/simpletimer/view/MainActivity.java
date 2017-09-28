@@ -158,10 +158,11 @@ public class MainActivity extends AppCompatActivity {
     class CancelClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            resetScreen();
-            if (!TE.isTerminated()) {
+            if (!TE.isTerminated() && !TE.isTerminating() && !TE.isShutdown()) {
+                // if timer is going - stop
                 mStopClickListener.onClick(null);
             }
+            resetScreen();
             mIsCanceled = true;
         }
     }

@@ -7,9 +7,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import ru.romanbrazhnikov.simpletimer.R;
 import ru.romanbrazhnikov.simpletimer.model.TimerModel;
@@ -118,8 +120,19 @@ public class MainActivity extends AppCompatActivity {
     //
 
     class StartClickListener implements View.OnClickListener {
+        private String mPatternString = "^[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}$";
+        private Pattern mPattern = Pattern.compile(mPatternString);
+
         @Override
         public void onClick(View view) {
+
+            // if doesn't match the pattern - do nothing
+            if (!mPattern.matcher(etDisplay.getText().toString()).find()) {
+                // ERROR handling
+                Toast.makeText(MainActivity.this, "Wrong time format", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             etDisplay.setVisibility(View.GONE);
             tvDisplay.setVisibility(View.VISIBLE);
 

@@ -10,13 +10,16 @@ public class TimerModel {
 
     private long mDurationInMillis;
 
+
     public TimerModel() {
     }
+
 
     public void setDuration(String duration) {
         int hours = 0;
         int minutes = 0;
         int seconds = 0;
+
 
         String[] res = duration.split(":");
         hours = Integer.parseInt(res[0]);
